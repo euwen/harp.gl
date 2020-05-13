@@ -11,6 +11,12 @@ on:
 env:
   nodeTestTimeout: 4000
   browserTestTimeout: 8000
+  # GitHub actions already have chrome, and required selenium drivers installed,
+  # so no need to download it by yarn.
+  # See https://help.github.com/en/actions/reference/software-installed-on-github-hosted-runners
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+  GECKODRIVER_SKIP_DOWNLOAD: true
+  CHROMEDRIVER_SKIP_DOWNLOAD: true
 
 jobs:
   test:
@@ -60,8 +66,6 @@ jobs:
       shell: bash
     - name: Tests on Chrome (Windows)
       run: |
-        export PATH=`pwd`:$PATH
-        cp node_modules/chromedriver/lib/chromedriver/chromedriver.exe .
         yarn test-browser --headless-chrome --timeout ${{ env.browserTestTimeout }}
       shell: bash
       if: matrix.os == 'windows-latest'
@@ -76,8 +80,6 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
     - name: Tests on Firefox (Windows)
       run: |
-        export PATH=`pwd`:$PATH
-        cp node_modules/geckodriver/geckodriver.exe .
         yarn test-browser --headless-firefox --timeout ${{ env.browserTestTimeout }}
       if: matrix.os == 'windows-latest'
       shell: bash
